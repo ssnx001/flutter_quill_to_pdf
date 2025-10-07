@@ -624,6 +624,9 @@ abstract class PdfConfigurator<T, D> extends ConverterConfigurator<T, D>
     pw.TextStyle? style,
     pw.TextDirection? textDirection,
   ]) async {
+    // 👇 新增：获取 bulletStyle 作为基础样式
+    pw.TextStyle baseStyle = defaultTheme.bulletStyle ?? defaultTheme.defaultTextStyle;
+
     pw.Widget? leadingWidget;
 
     // Get the style from the first span to wrap
@@ -632,6 +635,10 @@ abstract class PdfConfigurator<T, D> extends ConverterConfigurator<T, D>
     // size of that span to the leading
     final pw.TextStyle? firstSpanStyle =
         spansToWrap.isNotEmpty ? spansToWrap.first.style : null;
+
+    // 👇 新增：合并 bulletStyle 和 firstSpanStyle
+    pw.TextStyle effectiveStyle = baseStyle.merge(firstSpanStyle);
+
     final double? spacing = firstSpanStyle?.lineSpacing;
     if (listLeadingBuilder != null) {
       final pw.Widget? leading =
@@ -794,7 +801,7 @@ abstract class PdfConfigurator<T, D> extends ConverterConfigurator<T, D>
           width: pageWidth,
           padding: pw.EdgeInsetsDirectional.only(
             start: indentLevel > 0 ? indentLevel * 12.5 : 15,
-            bottom: spacing?.resolvePaddingByLineHeight() ?? 1.5,
+            bottom: spacing?.resolvePaddingByLineHeight() ?? 5,
           ),
           child: child),
     );
